@@ -10,20 +10,19 @@
 
 <body>
   <form>
-    <textarea name="test" id="test" cols="30" rows="10"></textarea>
-    <p></p>
-    <textarea id="show"></textarea>
+    <textarea name="test" id="test" cols="50" rows="10" placeholder="Codes here."></textarea>
+    <textarea id="show" cols="50" rows="10" placeholder="Running result."></textarea>
     <p></p>
     <input id="submit" type="button" value="提交">
   </form>
 
-  <script src="./axios.min.js"></script>
+  <script src="./js/axios.min.js"></script>
   <script>
     ;(function () {
       var input = document.getElementById('test');
       var show = document.getElementById('show');
       document.getElementById('submit').addEventListener('click', function () {
-        axios.get('/test', {
+        axios.get('/api/run/nodejs', {
           params: {
             code: input.value
           }
