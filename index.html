@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <form>
+    <textarea name="test" id="test" cols="30" rows="10"></textarea>
+    <p></p>
+    <textarea id="show"></textarea>
+    <p></p>
+    <input id="submit" type="button" value="提交">
+  </form>
+
+  <script src="./axios.min.js"></script>
+  <script>
+    ;(function () {
+      var input = document.getElementById('test');
+      var show = document.getElementById('show');
+      document.getElementById('submit').addEventListener('click', function () {
+        axios.get('/test', {
+          params: {
+            code: input.value
+          }
+        }).then(function (res) {
+          show.value = res.data;
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>
