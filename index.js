@@ -9,6 +9,8 @@ const TEMPDIR = os.tmpdir()
 
 app.use(express.static(path.join(__dirname, 'static')))
 
+app.enable('trust proxy')
+
 app.use((req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*')
   res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
@@ -24,13 +26,13 @@ app.get('/api/run/nodejs', function (req, res) {
       console.log(err)
       return res.send('Error execution.')
     }
-    exec(`docker run --rm --name '${t}' --user 'nobody' --network 'none' -v ${cmdFilename}:/data/t.js nodejs:v8.9.4 node /data/t.js`, (error, stdout, stderr) => {
+    exec(`docker run --rm --name '${t}' -m 16m --user 'nobody' --network 'none' --ulimit nproc=10:20 --cpu-period=1000000 --cpu-quota=200000 -v ${cmdFilename}:/data/t.js nodejs:v8.9.4 node /data/t.js`, (error, stdout, stderr) => {
       cmdSuccess = true
       fs.unlink(cmdFilename, err => {
         err && console.log(err)
       })
-      if (error) {
-        fs.appendFile('log.txt', `${new Date()}\r\n${JSON.stringify(error)}\r\n`, 'utf8', err => {
+      if (error && !/(SyntaxError|ReferenceError)/.test(error.message)) {
+        fs.appendFile('log.txt', `${new Date()}\r\n${res.ip}\r\n${error.message}\r\n-------\r\n`, 'utf8', err => {
           err && console.log(err)
         })
       }
@@ -45,7 +47,7 @@ app.get('/api/run/nodejs', function (req, res) {
     setTimeout(() => {
       if (!cmdSuccess) {
         timeOut = true
-        exec(`docker stop -t 3 ${t}`, error => {
+        exec(`docker stop -t 0 ${t}`, error => {
           error && console.error(error)
         })
       }

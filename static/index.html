@@ -5,26 +5,67 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>Run nodejs codes online.</title>
+
+  <link href="https://cdn.bootcss.com/bulma/0.6.2/css/bulma.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.33.0/codemirror.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/codemirror/5.33.0/theme/midnight.min.css" rel="stylesheet">
+
+  <style>
+
+    .CodeMirror {
+      font-size: 16px;
+    }
+
+  </style>
 </head>
 
 <body>
-  <form>
-    <textarea name="test" id="test" cols="50" rows="10" placeholder="Codes here."></textarea>
-    <textarea id="show" cols="50" rows="10" placeholder="Running result."></textarea>
-    <p></p>
-    <input id="submit" type="button" value="提交">
+
+  <section class="hero is-info">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Run nodejs codes online.
+        </h1>
+        <h2 class="subtitle">
+          Codes go here.
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <form class="container">
+    <div style="margin: 30px 0;">
+      <textarea name="editor" id="editor" placeholder="Nodejs codes here."></textarea>
+    </div>
+    <div class="buttons is-centered">
+      <a id="submit" class="button is-danger is-rounded">Submit</a>
+    </div>
+    <div class="field">
+      <div class="control">
+        <textarea id="show" class="textarea is-warning" type="text" placeholder="Running result." readonly></textarea>
+      </div>
+    </div>
   </form>
 
-  <script src="./js/axios.min.js"></script>
+  <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.33.0/codemirror.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.33.0/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdn.bootcss.com/codemirror/5.33.0/addon/selection/active-line.min.js"></script>
   <script>
     ;(function () {
-      var input = document.getElementById('test');
       var show = document.getElementById('show');
+      var input = document.getElementById('editor');
+      var CodeMirrorEditor = CodeMirror.fromTextArea(input, {
+        mode: 'text/javascript',
+        theme: 'midnight',
+        lineNumbers: true
+      });
       document.getElementById('submit').addEventListener('click', function () {
         axios.get('/api/run/nodejs', {
           params: {
-            code: input.value
+            code: CodeMirrorEditor.getValue()
           }
         }).then(function (res) {
           show.value = res.data;
